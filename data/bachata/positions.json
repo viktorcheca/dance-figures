@@ -1,1 +1,26 @@
-
+[
+  {
+    "id": "abierto",
+    "Name": "Abierto"
+  },
+  {
+    "id": "semiabierto",
+    "Name": "Semi-abierto"
+  },
+  {
+    "id": "cerrado",
+    "Name": "Cerrado"
+  },
+  {
+    "id": "sombra",
+    "Name": "Sombra"
+  },
+  {
+    "id": "sombrita",
+    "Name": "Sombrita"
+  },
+  {
+    "id": "enrosca",
+    "Name": "Enrosca"
+  }
+]

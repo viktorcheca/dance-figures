@@ -1,0 +1,34 @@
+[
+  {
+    "id": "basico",
+    "name": "Básico",
+    "entrada": "abierto",
+    "salida": "abierto",
+    "timing": "4T",
+    "notas": "seguro"
+  },
+  {
+    "id": "lateral_cerrado",
+    "name": "Lateral en cerrada",
+    "entrada": "cerrado",
+    "salida": "cerrado",
+    "timing": "4T",
+    "notas": "compacto"
+  },
+  {
+    "id": "salida_abierto",
+    "name": "Salida a abierto",
+    "entrada": "cerrado",
+    "salida": "abierto",
+    "timing": "4T",
+    "notas": "abre suave"
+  },
+  {
+    "id": "vuelta_cerrado",
+    "name": "Vuelta para cerrar",
+    "entrada": "abierto",
+    "salida": "cerrado",
+    "timing": "4T",
+    "notas": "cierra con vuelta chica, manoa escapula"
+  }
+]

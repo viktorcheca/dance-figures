@@ -191,8 +191,8 @@ async function enterDance(danceKey) {
 
   // Cargamos datos solo si existen (de momento bachata)
   try {
-    positions = await loadJSON(`../data/${danceKey}/positions.json`);
-    steps = await loadJSON(`../data/${danceKey}/steps.json`);
+    positions = await loadJSON(`/data/${danceKey}/positions.json`);
+    steps = await loadJSON(`/data/${danceKey}/steps.json`);
 
     positions.sort(byName);
     steps.sort(byName);

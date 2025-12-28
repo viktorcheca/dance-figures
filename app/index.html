@@ -1,1 +1,98 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dance Figures</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>Dance Figures</h1>
+    <p class="muted">Repaso y configurador de secuencias (v0)</p>
+  </header>
+
+  <main class="container">
+    <!-- HOME: selector de baile -->
+    <section id="view-home" class="card">
+      <h2>Elige un baile</h2>
+      <div class="grid-2">
+        <button class="btn" data-dance="salsa_la">Salsa L.A.</button>
+        <button class="btn" data-dance="salsa_cubana">Salsa Cubana</button>
+        <button class="btn" data-dance="bachata">Bachata</button>
+        <button class="btn" data-dance="kizomba">Kizomba</button>
+      </div>
+      <p class="muted small">De momento solo hay datos de Bachata (si no, verás un aviso).</p>
+    </section>
+
+    <!-- DANCE: menú dentro del baile -->
+    <section id="view-dance" class="card hidden">
+      <div class="row space-between">
+        <h2 id="dance-title">Bachata</h2>
+        <button class="btn ghost" id="btn-back-home">← Volver</button>
+      </div>
+
+      <div class="grid-2">
+        <button class="btn" id="btn-view-steps">1) Ver pasos</button>
+        <button class="btn primary" id="btn-config">2) Configurar figuras</button>
+      </div>
+
+      <div id="dance-warning" class="warn hidden"></div>
+    </section>
+
+    <!-- VER PASOS -->
+    <section id="view-steps" class="card hidden">
+      <div class="row space-between">
+        <h2>Ver pasos</h2>
+        <button class="btn ghost" id="btn-back-dance-1">← Volver</button>
+      </div>
+
+      <div class="row">
+        <label for="steps-filter">Filtrar por entrada:</label>
+        <select id="steps-filter"></select>
+      </div>
+
+      <ul id="steps-list" class="list"></ul>
+    </section>
+
+    <!-- CONFIGURAR -->
+    <section id="view-config" class="card hidden">
+      <div class="row space-between">
+        <h2>Configurar figuras</h2>
+        <button class="btn ghost" id="btn-back-dance-2">← Volver</button>
+      </div>
+
+      <div class="row">
+        <label for="pos-start">Posición de entrada:</label>
+        <select id="pos-start"></select>
+      </div>
+
+      <div class="split">
+        <div>
+          <h3>Pasos posibles</h3>
+          <ul id="possible-steps" class="list"></ul>
+        </div>
+
+        <div>
+          <h3>Bloc (temporal)</h3>
+          <ol id="scratch-seq" class="list"></ol>
+          <div class="row">
+            <button class="btn" id="btn-undo">Deshacer último</button>
+            <button class="btn danger" id="btn-clear">Limpiar</button>
+          </div>
+          <p class="muted small">
+            V0: el bloc no se guarda aún (luego lo pasamos a localStorage).
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer muted small">
+    Hecho para socials. V0.
+  </footer>
+
+  <script src="./app.js"></script>
+</body>
+</html>
 

@@ -197,9 +197,26 @@ function clearScratch() {
 }
 
 function validateData() {
-  // avisa si hay steps con entradas/salidas que no existen
+  // Devuelve detalle de pasos con entrada/salida inexistentes
   const posIds = new Set(positions.map(p => p.id));
-  const bad = steps.filter(s => !posIds.has(s.entrada) || !posIds.has(s.salida));
+  const bad = [];
+
+  for (const s of steps) {
+    const missingEntrada = !posIds.has(s.entrada);
+    const missingSalida = !posIds.has(s.salida);
+
+    if (missingEntrada || missingSalida) {
+      bad.push({
+        id: s.id,
+        name: s.name ?? s.id,
+        entrada: s.entrada,
+        salida: s.salida,
+        missingEntrada,
+        missingSalida,
+      });
+    }
+  }
+
   return bad;
 }
 
@@ -210,7 +227,6 @@ async function enterDance(danceKey) {
   $("#dance-title").textContent = danceKey.replace("_", " ").toUpperCase();
   setWarning("");
 
-  // Cargamos datos solo si existen (de momento bachata)
   try {
     positions = await loadJSON(`data/${danceKey}/positions.json`);
     steps = await loadJSON(`data/${danceKey}/steps.json`);
@@ -220,9 +236,22 @@ async function enterDance(danceKey) {
 
     const bad = validateData();
     if (bad.length) {
-      setWarning(`Ojo: hay ${bad.length} pasos con entrada/salida que no existen en positions.json.`);
+      const lines = bad
+        .slice(0, 10)
+        .map(b => {
+          const prob = [
+            b.missingEntrada ? `entrada "${b.entrada}"` : null,
+            b.missingSalida ? `salida "${b.salida}"` : null,
+          ].filter(Boolean).join(" y ");
+          return `• ${b.name} (${b.id}) → falta ${prob}`;
+        })
+        .join("\n");
+
+      const more = bad.length > 10 ? `\n…y ${bad.length - 10} más.` : "";
+      setWarning(`Ojo: ${bad.length} pasos tienen posiciones inexistentes:\n${lines}${more}`);
     }
   } catch (e) {
+    console.error(e);
     positions = [];
     steps = [];
     setWarning("Aún no hay datos para este baile.");

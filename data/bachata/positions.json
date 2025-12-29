@@ -12,8 +12,12 @@
     "Name": "Cerrado"
   },
   {
-    "id": "sombra",
-    "Name": "Sombra"
+    "id": "sombra_semi_cerrada",
+    "Name": "Sombra cerrada con mano derecha"
+  },
+  {
+    "id": "sombra_abierta",
+    "Name": "sombra abierta manos apoyadas"
   },
   {
     "id": "sombrita",
@@ -26,5 +30,9 @@
   {
     "id": "abierta_bufanda_derecha",
     "Name": "Posición abierta con una bufanda con el brazo derecho"
+  },
+  {
+    "id": "enfrentados_lateral_brazo_nuca",
+    "Name": "posicion lateral donde la chica y el chico están mirando cada uno a un lado pero la chica tiene el brazo en la nuca del chico"
   }
 ]

@@ -1,6 +1,6 @@
 [
   {
-    "id": "basico",
+    "id": "basico_i",
     "name": "Básico",
     "entrada": "abierto",
     "salida": "abierto",
@@ -9,13 +9,67 @@
     "notas": "seguro"
   },
   {
-    "id": "basico_semiabierto",
+    "id": "basico_d",
+    "name": "Básico",
+    "entrada": "abierto",
+    "salida": "abierto",
+    "timing": "4T",
+    "half": "down",
+    "notas": "seguro"
+  },
+  {
+    "id": "basico_semiabierto_i",
     "name": "Básico semi abierto",
     "entrada": "semiabierto",
     "salida": "semiabierto",
     "timing": "4T",
     "half": "up",
     "notas": "seguro"
+  },
+  {
+    "id": "basico_semiabierto_d",
+    "name": "Básico semi abierto",
+    "entrada": "semiabierto",
+    "salida": "semiabierto",
+    "timing": "4T",
+    "half": "down",
+    "notas": "seguro"
+  },
+  {
+    "id": "basico_cerrado_i",
+    "name": "Básico cerrado",
+    "entrada": "cerrado",
+    "salida": "cerrado",
+    "timing": "4T",
+    "half": "up",
+    "notas": "seguro"
+  },
+  {
+    "id": "basico_cerrado_d",
+    "name": "Básico cerrado",
+    "entrada": "cerrado",
+    "salida": "cerrado",
+    "timing": "4T",
+    "half": "down",
+    "notas": "seguro"
+  },
+  {
+    "id": "basico_sitio_i",
+    "name": "Basico en el sitio",
+    "entrada": "cerrado",
+    "salida": "cerrado",
+    "timing": "4T",
+    "half": "up",
+    "notas": "Bolero en 3-4 (make it sexy)"
+  },
+  {
+    "id": "basico_sitio_d",
+    "name": "Basico en el sitio",
+    "entrada": "cerrado",
+    "salida": "cerrado",
+    "timing": "4T",
+    "half": "down",
+    "notas": "Bolero en 7-8 (make it sexy)"
   },
   {
     "id": "salida_abierto",
@@ -43,5 +97,59 @@
     "timing": "4T",
     "half": "up",
     "notas": "chico mete codo izquierdo en 1 y 2 y en 3 y 4 pone la bufanda a la chica"
+  },
+  {
+    "id": "contragiro_bufandado",
+    "name": "Contragiro simple",
+    "entrada": "abierta_bufanda_derecha",
+    "salida": "abierto",
+    "timing": "4T",
+    "half": "down",
+    "notas": "Haces un contragiro indicando con el cuerpo hacia fuera, en 6 giras"
+  },
+  {
+    "id": "rompe_arriba_foco",
+    "name": "rompe y atrapa brazo cambiando foco",
+    "entrada": "semiabierto",
+    "salida": "cerrado",
+    "timing": "4T",
+    "half": "up",
+    "notas": "rompe lanzando el brazo por arriba, atrapas el brazo gurando el torso, pasas a cerrado"
+  },
+  {
+    "id": "rompe_abajo_foco",
+    "name": "rompe por abajo girando peso cadera",
+    "entrada": "semiabierto",
+    "salida": "enfrentados lateral brazo nuca",
+    "timing": "4T",
+    "half": "up",
+    "notas": "rompe lanzando por abajo y girando el torso para que la chica deje el brazo en la nuca, deveriais apoyar las caderas para tener contacto"
+  },
+  {
+    "id": "cadera_circular",
+    "name": "cadera circular chica, chico pasa atrás",
+    "entrada": "enfrentados lateral brazo nuca",
+    "salida": "sombra abierta",
+    "timing": "4T",
+    "half": "down",
+    "notas": "indicas cadera a la chica hacia arriba, ella rellena los tiempos y tu te colcas"
+  },
+  {
+    "id": "vuelta_derecha",
+    "name": "vuelta derecha chica",
+    "entrada": "abierto",
+    "salida": "abierto",
+    "timing": "4T",
+    "half": "down",
+    "notas": "vuelta simple chica"
+  },
+  {
+    "id": "vuelta_izquierda",
+    "name": "vuelta izquierda chica",
+    "entrada": "abierto",
+    "salida": "abierto",
+    "timing": "4T",
+    "half": "up",
+    "notas": "vuelta simple chica"
   }
 ]

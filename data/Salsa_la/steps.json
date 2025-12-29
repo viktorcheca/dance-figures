@@ -1,1 +1,20 @@
-a
+[
+  {
+    "id": "basico_d",
+    "name": "Básico",
+    "entrada": "abierto",
+    "salida": "abierto",
+    "timing": "4T",
+    "half": "up",
+    "notas": "seguro"
+  },
+  {
+    "id": "basico_t",
+    "name": "Básico",
+    "entrada": "abierto",
+    "salida": "abierto",
+    "timing": "4T",
+    "half": "down",
+    "notas": "seguro"
+  }
+]

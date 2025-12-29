@@ -120,7 +120,7 @@
     "id": "rompe_abajo_foco",
     "name": "rompe por abajo girando peso cadera",
     "entrada": "semiabierto",
-    "salida": "enfrentados lateral brazo nuca",
+    "salida": "enfrentados_lateral_brazo_nuca",
     "timing": "4T",
     "half": "up",
     "notas": "rompe lanzando por abajo y girando el torso para que la chica deje el brazo en la nuca, deveriais apoyar las caderas para tener contacto"
@@ -128,8 +128,8 @@
   {
     "id": "cadera_circular",
     "name": "cadera circular chica, chico pasa atrás",
-    "entrada": "enfrentados lateral brazo nuca",
-    "salida": "sombra abierta",
+    "entrada": "enfrentados_lateral_brazo_nuca",
+    "salida": "sombra_abierta",
     "timing": "4T",
     "half": "down",
     "notas": "indicas cadera a la chica hacia arriba, ella rellena los tiempos y tu te colcas"
@@ -152,4 +152,5 @@
     "half": "up",
     "notas": "vuelta simple chica"
   }
+
 ]

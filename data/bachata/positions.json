@@ -22,5 +22,9 @@
   {
     "id": "enrosca",
     "Name": "Enrosca"
+  },
+  {
+    "id": "abierta_bufanda_derecha",
+    "Name": "Posición abierta con una bufanda con el brazo derecho"
   }
 ]

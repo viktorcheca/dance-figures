@@ -5,15 +5,17 @@
     "entrada": "abierto",
     "salida": "abierto",
     "timing": "4T",
+    "half": "up",
     "notas": "seguro"
   },
   {
-    "id": "lateral_cerrado",
-    "name": "Lateral en cerrada",
-    "entrada": "cerrado",
-    "salida": "cerrado",
+    "id": "basico_semiabierto",
+    "name": "Básico semi abierto",
+    "entrada": "semiabierto",
+    "salida": "semiabierto",
     "timing": "4T",
-    "notas": "compacto"
+    "half": "up",
+    "notas": "seguro"
   },
   {
     "id": "salida_abierto",
@@ -21,6 +23,7 @@
     "entrada": "cerrado",
     "salida": "abierto",
     "timing": "4T",
+    "half": "up",
     "notas": "abre suave"
   },
   {
@@ -29,6 +32,16 @@
     "entrada": "abierto",
     "salida": "cerrado",
     "timing": "4T",
-    "notas": "cierra con vuelta chica, manoa escapula"
+    "half": "down",
+    "notas": "cierra con vuelta chica, mano a escapula"
+  },
+  {
+    "id": "codo__bufanda",
+    "name": "meter codo + Bufanda",
+    "entrada": "abierto",
+    "salida": "abierta_bufanda_derecha",
+    "timing": "4T",
+    "half": "up",
+    "notas": "chico mete codo izquierdo en 1 y 2 y en 3 y 4 pone la bufanda a la chica"
   }
 ]

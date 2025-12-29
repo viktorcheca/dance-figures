@@ -4,6 +4,7 @@ let positions = [];
 let steps = [];
 let scratch = []; // secuencia temporal (lista de pasos)
 let currentPosition = null;
+let expectedHalf = "up"; // alterna estrictamente: up -> down -> up ...
 
 // --- Helpers DOM ---
 const $ = (sel) => document.querySelector(sel);
@@ -93,6 +94,13 @@ function renderStepsList(listEl, filteredSteps, { showAdd = false } = {}) {
     kv.appendChild(b1);
     kv.appendChild(b2);
 
+    if (s.half) {
+      const bHalf = document.createElement("span");
+      bHalf.className = "badge";
+      bHalf.textContent = `half: ${s.half}`;
+      kv.appendChild(bHalf);
+    }
+
     if (s.timing) {
       const b3 = document.createElement("span");
       b3.className = "badge";
@@ -143,8 +151,9 @@ function renderScratch() {
   }
 
   for (const s of scratch) {
+    const halfTxt = s.half ? ` [${s.half}]` : "";
     const li = document.createElement("li");
-    li.textContent = `${s.name ?? s.id}  (${posName(s.entrada)} → ${posName(s.salida)})`;
+    li.textContent = `${s.name ?? s.id}${halfTxt}  (${posName(s.entrada)} → ${posName(s.salida)})`;
     el.appendChild(li);
   }
 }
@@ -152,18 +161,29 @@ function renderScratch() {
 function addStepToScratch(step) {
   scratch.push(step);
   currentPosition = step.salida; // encadenado
+
+  // Alternancia estricta (si no hay half por algún step viejo, asumimos "up")
+  const currentHalf = step.half || "up";
+  expectedHalf = (currentHalf === "up") ? "down" : "up";
+
   renderScratch();
   renderPossibleSteps(); // recalcula siguientes
 }
 
 function undoScratch() {
   scratch.pop();
-  // recalcular posición actual
+
   if (scratch.length === 0) {
     currentPosition = $("#pos-start").value;
+    expectedHalf = "up";
   } else {
-    currentPosition = scratch[scratch.length - 1].salida;
+    const last = scratch[scratch.length - 1];
+    currentPosition = last.salida;
+
+    const lastHalf = last.half || "up";
+    expectedHalf = (lastHalf === "up") ? "down" : "up";
   }
+
   renderScratch();
   renderPossibleSteps();
 }
@@ -171,6 +191,7 @@ function undoScratch() {
 function clearScratch() {
   scratch = [];
   currentPosition = $("#pos-start").value;
+  expectedHalf = "up";
   renderScratch();
   renderPossibleSteps();
 }
@@ -234,7 +255,17 @@ function enterViewSteps() {
 }
 
 function renderPossibleSteps() {
-  const possible = steps.filter(s => s.entrada === currentPosition);
+  if (!currentPosition) {
+    renderStepsList($("#possible-steps"), [], { showAdd: true });
+    return;
+  }
+
+  // Filtra por entrada + half esperado (si el step no tiene half, lo tratamos como "up")
+  const possible = steps.filter(s =>
+    s.entrada === currentPosition &&
+    ((s.half || "up") === expectedHalf)
+  );
+
   renderStepsList($("#possible-steps"), possible, { showAdd: true });
 }
 
@@ -246,9 +277,11 @@ function enterViewConfig() {
   // select de posición inicial
   const sel = $("#pos-start");
   fillSelect(sel, positions);
+
   sel.onchange = () => {
     scratch = [];
     currentPosition = sel.value;
+    expectedHalf = "up";
     renderScratch();
     renderPossibleSteps();
   };
@@ -257,8 +290,10 @@ function enterViewConfig() {
   if (positions.length) {
     sel.value = positions[0].id;
     currentPosition = sel.value;
+    expectedHalf = "up";
   } else {
     currentPosition = null;
+    expectedHalf = "up";
   }
 
   renderPossibleSteps();

@@ -126,6 +126,7 @@ select {
   gap: 8px;
   margin-top: 6px;
 }
+.warn { white-space: pre-line; }
 
 .badge {
   font-size: 12px;

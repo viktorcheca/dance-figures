@@ -21,18 +21,6 @@ body {
   margin: 0 auto;
 }
 
-.time-indicator {
-  margin-top: 14px;
-  font-size: 1.6rem;
-  font-weight: 800;
-  color: #ffffff;
-  padding: 6px 12px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.06);
-  display: inline-block;
-}
-
-
 .card {
   background: #121a24;
   border: 1px solid #1f2a39;
@@ -45,6 +33,7 @@ body {
 h1 { margin: 0; font-size: 22px; }
 h2 { margin: 0 0 10px; font-size: 18px; }
 h3 { margin: 8px 0 10px; font-size: 15px; }
+h4 { margin: 10px 0; font-size: 14px; }
 
 .muted { color: #a9b6c7; }
 .small { font-size: 12px; }
@@ -62,6 +51,11 @@ h3 { margin: 8px 0 10px; font-size: 15px; }
   margin: 10px 0;
 }
 
+/* útil para filas de botones y selects */
+.row.wrap {
+  flex-wrap: wrap;
+}
+
 .space-between { justify-content: space-between; }
 
 .split {
@@ -75,6 +69,7 @@ h3 { margin: 8px 0 10px; font-size: 15px; }
   .split { grid-template-columns: 1fr; }
 }
 
+/* Form controls */
 label { font-weight: 600; }
 
 select {
@@ -86,6 +81,12 @@ select {
   min-width: 220px;
 }
 
+/* En móvil, los selects ocupan mejor */
+@media (max-width: 520px) {
+  select { min-width: 0; width: 100%; }
+}
+
+/* Lists */
 .list {
   margin: 0;
   padding-left: 18px;
@@ -99,6 +100,7 @@ select {
   margin: 8px 0;
 }
 
+/* Buttons */
 .btn {
   border: 1px solid #223249;
   background: #0e1520;
@@ -111,18 +113,16 @@ select {
 
 .btn:hover { filter: brightness(1.06); }
 
-.btn.primary {
-  border-color: #2e6cff;
+.btn.primary { border-color: #2e6cff; }
+.btn.ghost { background: transparent; }
+.btn.danger { border-color: #ff3b3b; }
+
+/* En móvil, botones más “tocables” y con wrap */
+@media (max-width: 520px) {
+  .btn { width: 100%; }
 }
 
-.btn.ghost {
-  background: transparent;
-}
-
-.btn.danger {
-  border-color: #ff3b3b;
-}
-
+/* Warnings */
 .warn {
   margin-top: 10px;
   padding: 10px 12px;
@@ -130,15 +130,16 @@ select {
   border: 1px solid #6b4d00;
   background: #241a00;
   color: #ffd07a;
+  white-space: pre-line;
 }
 
+/* Key-value badges row */
 .kv {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 6px;
 }
-.warn { white-space: pre-line; }
 
 .badge {
   font-size: 12px;
@@ -149,6 +150,35 @@ select {
   color: #a9b6c7;
 }
 
+/* Tiempo actual: grande y visible */
+.time-indicator {
+  margin-top: 14px;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  display: inline-block;
+}
+
+/* Micro UI: estado del bloc */
+#scratch-status {
+  color: #a9b6c7;
+}
+
+/* Mensaje tipo “toast” simple */
+#config-msg {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid #223249;
+  background: rgba(14, 21, 32, 0.7);
+  color: #a9b6c7;
+  min-height: 18px; /* evita saltos cuando está vacío */
+}
+
+/* Footer */
 .footer {
   padding: 0 18px 18px;
   text-align: center;

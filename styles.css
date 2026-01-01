@@ -21,6 +21,14 @@ body {
   margin: 0 auto;
 }
 
+.time-indicator {
+  margin-top: 14px;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+}
+
 .card {
   background: #121a24;
   border: 1px solid #1f2a39;

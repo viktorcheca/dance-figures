@@ -158,6 +158,7 @@ function renderScratch() {
   }
 }
 
+// --- Indicador de tiempo (UP/DOWN -> 1/5) ---
 function halfToBeat(half) {
   return (half === "down") ? 5 : 1; // up -> 1, down -> 5
 }
@@ -181,6 +182,7 @@ function addStepToScratch(step) {
 
   renderScratch();
   renderPossibleSteps(); // recalcula siguientes
+  updateTimeIndicator();
 }
 
 function undoScratch() {
@@ -199,6 +201,7 @@ function undoScratch() {
 
   renderScratch();
   renderPossibleSteps();
+  updateTimeIndicator();
 }
 
 function clearScratch() {
@@ -207,6 +210,7 @@ function clearScratch() {
   expectedHalf = "up";
   renderScratch();
   renderPossibleSteps();
+  updateTimeIndicator();
 }
 
 function validateData() {
@@ -326,6 +330,7 @@ function enterViewConfig() {
     expectedHalf = "up";
     renderScratch();
     renderPossibleSteps();
+    updateTimeIndicator();
   };
 
   // default
@@ -339,6 +344,7 @@ function enterViewConfig() {
   }
 
   renderPossibleSteps();
+  updateTimeIndicator();
   show("config");
 }
 

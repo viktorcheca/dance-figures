@@ -9,7 +9,7 @@
 <body>
   <header class="topbar">
     <h1>Dance Figures</h1>
-    <p class="muted">Repaso y configurador de secuencias (v0)</p>
+    <p class="muted">Repaso y configurador de secuencias (v1)</p>
   </header>
 
   <main class="container">
@@ -22,7 +22,6 @@
         <button class="btn" data-dance="bachata">Bachata</button>
         <button class="btn" data-dance="kizomba">Kizomba</button>
       </div>
-     
     </section>
 
     <!-- DANCE: menú dentro del baile -->
@@ -58,7 +57,12 @@
     <!-- CONFIGURAR -->
     <section id="view-config" class="card hidden">
       <div class="row space-between">
-        <h2>Configurar figuras</h2>
+        <div>
+          <h2>Configurar figuras</h2>
+          <div class="muted small">
+            Duración actual: <span id="seq-duration">0 tiempos</span>
+          </div>
+        </div>
         <button class="btn ghost" id="btn-back-dance-2">← Volver</button>
       </div>
 
@@ -66,8 +70,9 @@
         <label for="pos-start">Posición de entrada:</label>
         <select id="pos-start"></select>
       </div>
-      
-      <div id="time-indicator" class="time-indicator" style="margin-top: 8px;"></div>
+
+      <!-- Indicador 1/5 (se estiliza en CSS) -->
+      <div id="time-indicator" class="time-indicator"></div>
 
       <div class="split">
         <div>
@@ -76,25 +81,48 @@
         </div>
 
         <div>
-          <h3>Bloc (temporal)</h3>
-          <ol id="scratch-seq" class="list"></ol>
-          <div class="row">
-            <button class="btn" id="btn-undo">Deshacer último</button>
-            <button class="btn danger" id="btn-clear">Limpiar</button>
+          <div class="row space-between" style="align-items: baseline;">
+            <h3 style="margin:0;">Bloc</h3>
+            <div id="scratch-status" class="muted small"></div>
           </div>
-          <p class="muted small">
-            V0: el bloc no se guarda aún (luego lo pasamos a localStorage).
-          </p>
+
+          <ol id="scratch-seq" class="list"></ol>
+
+          <!-- Acciones del bloc -->
+          <div class="row" style="flex-wrap: wrap; gap: 8px;">
+            <button class="btn" id="btn-undo">Deshacer</button>
+            <button class="btn danger" id="btn-clear">Limpiar bloc</button>
+            <button class="btn primary" id="btn-save-fig">Guardar figura</button>
+            <button class="btn" id="btn-share">Compartir</button>
+            <button class="btn" id="btn-copy">Copiar</button>
+          </div>
+
+          <!-- Biblioteca -->
+          <div class="card" style="margin-top: 12px;">
+            <h4 style="margin-top:0;">Figuras guardadas</h4>
+
+            <div class="row" style="flex-wrap: wrap; gap: 8px;">
+              <select id="fig-list" style="min-width: 220px;"></select>
+              <button class="btn" id="btn-load-fig">Cargar</button>
+              <button class="btn danger" id="btn-delete-fig">Borrar</button>
+            </div>
+
+            <div class="muted small" style="margin-top: 8px;">
+              Se guardan en este dispositivo (navegador).
+            </div>
+          </div>
+
+          <!-- Mensajes cortos (tipo toast simple) -->
+          <div id="config-msg" class="muted small" style="margin-top: 10px;"></div>
         </div>
       </div>
     </section>
   </main>
 
   <footer class="footer muted small">
-    Hecho para socials. V0.
+    Hecho para socials. V1.
   </footer>
 
   <script src="./app.js"></script>
 </body>
 </html>
-

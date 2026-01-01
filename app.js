@@ -97,7 +97,7 @@ function renderStepsList(listEl, filteredSteps, { showAdd = false } = {}) {
     if (s.half) {
       const bHalf = document.createElement("span");
       bHalf.className = "badge";
-      bHalf.textContent = `half: ${s.half}`;
+      bHalf.textContent = `tiempos: ${halfToRange(s.half)}`;
       kv.appendChild(bHalf);
     }
 
@@ -151,7 +151,7 @@ function renderScratch() {
   }
 
   for (const s of scratch) {
-    const halfTxt = s.half ? ` [${s.half}]` : "";
+    const halfTxt = s.half ? ` [${halfToRange(s.half)}]` : "";
     const li = document.createElement("li");
     li.textContent = `${s.name ?? s.id}${halfTxt}  (${posName(s.entrada)} → ${posName(s.salida)})`;
     el.appendChild(li);
@@ -163,13 +163,16 @@ function halfToBeat(half) {
   return (half === "down") ? 5 : 1; // up -> 1, down -> 5
 }
 
+function halfToRange(half) {
+  return (half === "down") ? "5–8" : "1–4";
+}
+
 function updateTimeIndicator() {
   const el = $("#time-indicator");
   if (!el) return;
 
   const beat = halfToBeat(expectedHalf);
-  const label = expectedHalf === "up" ? "UP (1–4)" : "DOWN (5–8)";
-  el.textContent = `Tiempo actual: ${beat}  ·  Esperado: ${label}`;
+  el.textContent = `Tiempo actual: ${beat}`;
 }
 
 function addStepToScratch(step) {

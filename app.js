@@ -23,6 +23,7 @@ function show(viewName) {
 
 function setWarning(text) {
   const el = $("#dance-warning");
+  if (!el) return;
   if (!text) {
     el.classList.add("hidden");
     el.textContent = "";
@@ -30,6 +31,21 @@ function setWarning(text) {
   }
   el.textContent = text;
   el.classList.remove("hidden");
+}
+
+function setMsg(text, { timeoutMs = 2000 } = {}) {
+  const el = $("#config-msg");
+  if (!el) return;
+  el.textContent = text || "";
+  if (!text) return;
+
+  if (timeoutMs) {
+    window.clearTimeout(setMsg._t);
+    setMsg._t = window.setTimeout(() => {
+      // no borres si ya cambió
+      if (el.textContent === text) el.textContent = "";
+    }, timeoutMs);
+  }
 }
 
 async function loadJSON(path) {
@@ -43,6 +59,7 @@ function byName(a, b) {
 }
 
 function fillSelect(selectEl, items, { includeAll = false, allLabel = "Todas" } = {}) {
+  if (!selectEl) return;
   selectEl.innerHTML = "";
   if (includeAll) {
     const opt = document.createElement("option");
@@ -64,7 +81,64 @@ function posName(id) {
   return p ? (p.name || p.id) : id;
 }
 
+// --- Timing helpers ---
+function halfToBeat(half) {
+  return (half === "down") ? 5 : 1; // up -> 1, down -> 5
+}
+
+function halfToRange(half) {
+  return (half === "down") ? "5–8" : "1–4";
+}
+
+function updateTimeIndicator() {
+  const el = $("#time-indicator");
+  if (!el) return;
+
+  const beat = halfToBeat(expectedHalf);
+  el.textContent = `Tiempo actual: ${beat}`;
+}
+
+// --- Duración / estado visual ---
+function calcDurationTimes() {
+  // Cada step representa medio 8 (4 tiempos). Total tiempos = scratch.length * 4
+  return scratch.length * 4;
+}
+
+function formatDanceName(danceKey) {
+  // "salsa_la" -> "Salsa LA"
+  if (!danceKey) return "";
+  const pretty = danceKey
+    .split("_")
+    .map((w, i) => {
+      if (danceKey === "salsa_la" && w === "la") return "LA";
+      return w.charAt(0).toUpperCase() + w.slice(1);
+    })
+    .join(" ");
+  return pretty;
+}
+
+function updateDurationUI() {
+  const el = $("#seq-duration");
+  if (!el) return;
+  const t = calcDurationTimes();
+  el.textContent = `${t} tiempos`;
+}
+
+function updateScratchStatus() {
+  const el = $("#scratch-status");
+  if (!el) return;
+  const n = scratch.length;
+  if (!n) {
+    el.textContent = "Vacío";
+    return;
+  }
+  el.textContent = `${n} bloques · ${calcDurationTimes()} tiempos`;
+}
+
+// --- Render ---
 function renderStepsList(listEl, filteredSteps, { showAdd = false } = {}) {
+  if (!listEl) return;
+
   listEl.innerHTML = "";
   if (!filteredSteps.length) {
     const li = document.createElement("li");
@@ -141,6 +215,8 @@ function renderStepsList(listEl, filteredSteps, { showAdd = false } = {}) {
 
 function renderScratch() {
   const el = $("#scratch-seq");
+  if (!el) return;
+
   el.innerHTML = "";
 
   if (!scratch.length) {
@@ -158,23 +234,258 @@ function renderScratch() {
   }
 }
 
-// --- Indicador de tiempo (UP/DOWN -> 1/5) ---
-function halfToBeat(half) {
-  return (half === "down") ? 5 : 1; // up -> 1, down -> 5
+// --- Persistencia del bloc actual (autosave) ---
+function scratchKey() {
+  return `dancefig:v1:${currentDance || "unknown"}:scratch`;
 }
 
-function halfToRange(half) {
-  return (half === "down") ? "5–8" : "1–4";
+function saveScratch() {
+  try {
+    const payload = {
+      v: 1,
+      dance: currentDance,
+      startPosition: $("#pos-start")?.value ?? null,
+      currentPosition,
+      expectedHalf,
+      scratchIds: scratch.map(s => s.id),
+      savedAt: Date.now(),
+    };
+    localStorage.setItem(scratchKey(), JSON.stringify(payload));
+  } catch (e) {
+    console.error("No se pudo guardar scratch:", e);
+  }
 }
 
-function updateTimeIndicator() {
-  const el = $("#time-indicator");
-  if (!el) return;
+function loadScratch() {
+  try {
+    const raw = localStorage.getItem(scratchKey());
+    if (!raw) return false;
 
-  const beat = halfToBeat(expectedHalf);
-  el.textContent = `Tiempo actual: ${beat}`;
+    const payload = JSON.parse(raw);
+    if (!payload || payload.v !== 1) return false;
+
+    const byId = new Map(steps.map(s => [s.id, s]));
+    scratch = (payload.scratchIds || []).map(id => byId.get(id)).filter(Boolean);
+
+    // restaurar selector de posición inicial
+    const sel = $("#pos-start");
+    if (sel && payload.startPosition) sel.value = payload.startPosition;
+
+    // restaurar estado
+    if (!scratch.length) {
+      currentPosition = sel?.value ?? payload.currentPosition ?? null;
+      expectedHalf = payload.expectedHalf ?? "up";
+    } else {
+      const last = scratch[scratch.length - 1];
+      currentPosition = last.salida;
+      const lastHalf = last.half || "up";
+      expectedHalf = (lastHalf === "up") ? "down" : "up";
+    }
+
+    return true;
+  } catch (e) {
+    console.error("No se pudo cargar scratch:", e);
+    return false;
+  }
 }
 
+// --- Biblioteca de figuras ---
+function figsKey() {
+  return `dancefig:v1:${currentDance || "unknown"}:figs`;
+}
+
+function readFigures() {
+  try {
+    return JSON.parse(localStorage.getItem(figsKey()) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function writeFigures(list) {
+  localStorage.setItem(figsKey(), JSON.stringify(list));
+}
+
+function makeFigureNameAuto() {
+  const dance = formatDanceName(currentDance);
+  const t = calcDurationTimes();
+  const d = new Date();
+  const date = d.toLocaleString("es-ES", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+  // ej: "Salsa LA – 24 tiempos – 01/01 18:32"
+  return `${dance} – ${t} tiempos – ${date}`;
+}
+
+function refreshFiguresUI() {
+  const sel = $("#fig-list");
+  if (!sel) return;
+
+  const figs = readFigures().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  sel.innerHTML = "";
+
+  if (!figs.length) {
+    const opt = document.createElement("option");
+    opt.value = "";
+    opt.textContent = "— No hay figuras guardadas —";
+    sel.appendChild(opt);
+    sel.disabled = true;
+    return;
+  }
+
+  sel.disabled = false;
+  for (const f of figs) {
+    const opt = document.createElement("option");
+    opt.value = f.id;
+    opt.textContent = f.name;
+    sel.appendChild(opt);
+  }
+}
+
+function uid() {
+  return Math.random().toString(16).slice(2) + Date.now().toString(16);
+}
+
+function saveCurrentAsFigure() {
+  if (!scratch.length) {
+    setMsg("El bloc está vacío. Añade pasos antes de guardar.", { timeoutMs: 2200 });
+    return;
+  }
+
+  const figs = readFigures();
+  const fig = {
+    v: 1,
+    id: uid(),
+    name: makeFigureNameAuto(),
+    createdAt: Date.now(),
+    dance: currentDance,
+    startPosition: $("#pos-start")?.value ?? null,
+    steps: scratch.map(s => s.id),
+  };
+
+  figs.unshift(fig);
+  writeFigures(figs);
+  refreshFiguresUI();
+  setMsg("Figura guardada ✅", { timeoutMs: 1800 });
+}
+
+function loadSelectedFigure() {
+  const sel = $("#fig-list");
+  const figId = sel?.value;
+  if (!figId) {
+    setMsg("No hay figura seleccionada.", { timeoutMs: 1600 });
+    return;
+  }
+
+  const figs = readFigures();
+  const f = figs.find(x => x.id === figId);
+  if (!f) return;
+
+  // reconstruir scratch desde steps por id
+  const byId = new Map(steps.map(s => [s.id, s]));
+  scratch = (f.steps || []).map(id => byId.get(id)).filter(Boolean);
+
+  // restaurar posición inicial
+  const posSel = $("#pos-start");
+  if (posSel && f.startPosition) posSel.value = f.startPosition;
+
+  // recalcular estado desde scratch
+  if (!scratch.length) {
+    currentPosition = posSel?.value ?? null;
+    expectedHalf = "up";
+  } else {
+    const last = scratch[scratch.length - 1];
+    currentPosition = last.salida;
+    const lastHalf = last.half || "up";
+    expectedHalf = (lastHalf === "up") ? "down" : "up";
+  }
+
+  renderScratch();
+  renderPossibleSteps();
+  updateTimeIndicator();
+  updateDurationUI();
+  updateScratchStatus();
+
+  saveScratch(); // el bloc actual pasa a ser esta figura
+  setMsg("Figura cargada ✅", { timeoutMs: 1600 });
+}
+
+function deleteSelectedFigure() {
+  const sel = $("#fig-list");
+  const figId = sel?.value;
+  if (!figId) return;
+
+  const figs = readFigures();
+  const f = figs.find(x => x.id === figId);
+  if (!f) return;
+
+  const ok = confirm(`¿Borrar "${f.name}"?`);
+  if (!ok) return;
+
+  writeFigures(figs.filter(x => x.id !== figId));
+  refreshFiguresUI();
+  setMsg("Figura borrada.", { timeoutMs: 1600 });
+}
+
+// --- Compartir / Copiar ---
+function buildShareText() {
+  const dance = formatDanceName(currentDance);
+  const t = calcDurationTimes();
+  const start = $("#pos-start")?.value ?? "";
+  const startTxt = start ? `Inicio: ${posName(start)}` : "";
+
+  const lines = [];
+  lines.push(`${dance} – ${t} tiempos`);
+  if (startTxt) lines.push(startTxt);
+  lines.push(""); // salto
+
+  // Lista de pasos con tiempos por línea
+  for (const s of scratch) {
+    const range = halfToRange(s.half || "up");
+    const name = s.name ?? s.id;
+    const arrow = `${posName(s.entrada)} → ${posName(s.salida)}`;
+    lines.push(`${range}  ${name}  (${arrow})`);
+  }
+
+  if (!scratch.length) {
+    lines.push("(Bloc vacío)");
+  }
+
+  return lines.join("\n");
+}
+
+async function shareScratch() {
+  const text = buildShareText();
+
+  // Web Share API (móvil)
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: "Dance Figures",
+        text,
+      });
+      setMsg("Compartido ✅", { timeoutMs: 1400 });
+      return;
+    } catch (e) {
+      // si cancelan, no hace falta asustar
+      console.debug("share cancel/fail:", e);
+    }
+  }
+
+  // fallback
+  await copyScratch();
+}
+
+async function copyScratch() {
+  const text = buildShareText();
+  try {
+    await navigator.clipboard.writeText(text);
+    setMsg("Copiado al portapapeles ✅", { timeoutMs: 1600 });
+  } catch (e) {
+    console.error(e);
+    setMsg("No se pudo copiar (tu navegador lo bloquea).", { timeoutMs: 2200 });
+  }
+}
+
+// --- Core: añadir/undo/clear con autosave ---
 function addStepToScratch(step) {
   scratch.push(step);
   currentPosition = step.salida; // encadenado
@@ -184,15 +495,21 @@ function addStepToScratch(step) {
   expectedHalf = (currentHalf === "up") ? "down" : "up";
 
   renderScratch();
-  renderPossibleSteps(); // recalcula siguientes
+  renderPossibleSteps();
   updateTimeIndicator();
+  updateDurationUI();
+  updateScratchStatus();
+
+  saveScratch();
 }
 
 function undoScratch() {
   scratch.pop();
 
+  const startPos = $("#pos-start")?.value ?? null;
+
   if (scratch.length === 0) {
-    currentPosition = $("#pos-start").value;
+    currentPosition = startPos;
     expectedHalf = "up";
   } else {
     const last = scratch[scratch.length - 1];
@@ -205,19 +522,28 @@ function undoScratch() {
   renderScratch();
   renderPossibleSteps();
   updateTimeIndicator();
+  updateDurationUI();
+  updateScratchStatus();
+
+  saveScratch();
 }
 
 function clearScratch() {
   scratch = [];
-  currentPosition = $("#pos-start").value;
+  currentPosition = $("#pos-start")?.value ?? null;
   expectedHalf = "up";
+
   renderScratch();
   renderPossibleSteps();
   updateTimeIndicator();
+  updateDurationUI();
+  updateScratchStatus();
+
+  saveScratch();
 }
 
+// --- Validación de datos ---
 function validateData() {
-  // Devuelve detalle de pasos con entrada/salida inexistentes
   const posIds = new Set(positions.map(p => p.id));
   const bad = [];
 
@@ -236,7 +562,6 @@ function validateData() {
       });
     }
   }
-
   return bad;
 }
 
@@ -281,12 +606,10 @@ async function enterDance(danceKey) {
 }
 
 function enterViewSteps() {
-  // Select de filtro
   const filter = $("#steps-filter");
   const items = [{ id: "__all__", name: "Todas" }, ...positions];
   fillSelect(filter, items, { includeAll: false });
 
-  // por defecto “todas”
   filter.value = "__all__";
 
   const render = () => {
@@ -309,7 +632,6 @@ function renderPossibleSteps() {
     return;
   }
 
-  // Filtra por entrada + half esperado (si el step no tiene half, lo tratamos como "up")
   const possible = steps.filter(s =>
     s.entrada === currentPosition &&
     ((s.half || "up") === expectedHalf)
@@ -319,21 +641,23 @@ function renderPossibleSteps() {
 }
 
 function enterViewConfig() {
-  // Reset bloc
-  scratch = [];
-  renderScratch();
-
   // select de posición inicial
   const sel = $("#pos-start");
   fillSelect(sel, positions);
 
   sel.onchange = () => {
+    // cambiar posición inicial resetea el bloc
     scratch = [];
     currentPosition = sel.value;
     expectedHalf = "up";
+
     renderScratch();
     renderPossibleSteps();
     updateTimeIndicator();
+    updateDurationUI();
+    updateScratchStatus();
+
+    saveScratch();
   };
 
   // default
@@ -346,8 +670,18 @@ function enterViewConfig() {
     expectedHalf = "up";
   }
 
+  // Intentar restaurar el bloc guardado
+  loadScratch();
+
+  // Render final
+  renderScratch();
   renderPossibleSteps();
   updateTimeIndicator();
+  updateDurationUI();
+  updateScratchStatus();
+  refreshFiguresUI();
+  setMsg("");
+
   show("config");
 }
 
@@ -368,10 +702,20 @@ function init() {
   $("#btn-config").addEventListener("click", () => enterViewConfig());
 
   // Scratch buttons
-  $("#btn-undo").addEventListener("click", () => undoScratch());
-  $("#btn-clear").addEventListener("click", () => clearScratch());
+  $("#btn-undo")?.addEventListener("click", () => undoScratch());
+  $("#btn-clear")?.addEventListener("click", () => clearScratch());
+
+  // Figuras
+  $("#btn-save-fig")?.addEventListener("click", () => saveCurrentAsFigure());
+  $("#btn-load-fig")?.addEventListener("click", () => loadSelectedFigure());
+  $("#btn-delete-fig")?.addEventListener("click", () => deleteSelectedFigure());
+
+  // Share / Copy
+  $("#btn-share")?.addEventListener("click", () => shareScratch());
+  $("#btn-copy")?.addEventListener("click", () => copyScratch());
 
   show("home");
 }
 
 init();
+

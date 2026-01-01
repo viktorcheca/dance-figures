@@ -158,6 +158,19 @@ function renderScratch() {
   }
 }
 
+function halfToBeat(half) {
+  return (half === "down") ? 5 : 1; // up -> 1, down -> 5
+}
+
+function updateTimeIndicator() {
+  const el = $("#time-indicator");
+  if (!el) return;
+
+  const beat = halfToBeat(expectedHalf);
+  const label = expectedHalf === "up" ? "UP (1–4)" : "DOWN (5–8)";
+  el.textContent = `Tiempo actual: ${beat}  ·  Esperado: ${label}`;
+}
+
 function addStepToScratch(step) {
   scratch.push(step);
   currentPosition = step.salida; // encadenado
